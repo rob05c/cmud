@@ -58,6 +58,12 @@ int main(int argc, char** argv) {
   printMap(&w); 
   world_refresh(&w);
 
+/*  wborder(w.Windows.Main, '*', '*', '*', '*', '*', '*', '*', '*');*/
+  wborder(w.Windows.Status, '#', '#', '#', '#', '#', '#', '#', '#');
+/*  wrefresh(w.Windows.Main);*/
+  wrefresh(w.Windows.Status);
+
+
   handleInput(&w, &done);
 
   endwin();
