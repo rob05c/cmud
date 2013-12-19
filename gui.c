@@ -45,20 +45,9 @@ void printGui(const char* msg, world* w) {
   const char* msgExit = " Press 'q' to exit";
   mvwprintw(w->Windows.Main, w->WindowHeight, w->WindowWidth - strlen(msgExit) - 1, msgExit);
 
-  box(w->Windows.Main, 0, 0);
-  box(w->Windows.Status, 0, 0);
-/*
-  wborder(w->Windows.Main, '*', '*', '*', '*', '*', '*', '*', '*');
-  wborder(w->Windows.Status, '#', '#', '#', '#', '#', '#', '#', '#');
-*/
-
-
-  printMap(w);
-
-  wborder(w->Windows.Main, '*', '*', '*', '*', '*', '*', '*', '*');
-  wborder(w->Windows.Status, '#', '#', '#', '#', '#', '#', '#', '#');
-  wrefresh(w->Windows.Main);
-  wrefresh(w->Windows.Status);
+  wborder(w->Windows.Main, '*', '*', '*', '*', '*', '*', '*', '*'); 
+  wborder(w->Windows.Status, '#', '#', '#', '#', '#', '#', '#', '#'); 
+  printMap(w); 
 }
 
 
@@ -68,13 +57,13 @@ WINDOW* initMainWindow(int height, int width, int minusHeight) {
 
 WINDOW* initRoomStatus(int myHeight, int height, int width) {
 
-  return newwin(myHeight-2, width-2, height - myHeight+1, 1);
+  return newwin(myHeight, width, height - myHeight, 0);
 }
 
 windows initWindows(int height, int width) {
   const int STATUS_HEIGHT = 10;
   windows ws;
-  ws.Status = initRoomStatus(height, width, STATUS_HEIGHT);
+  ws.Status = initRoomStatus(STATUS_HEIGHT, height, width);
   ws.Main = initMainWindow(height, width, STATUS_HEIGHT);
   return ws;
 }

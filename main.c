@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
 
   done = 0;
 
-  printMap(&w); 
+  printGui("", &w); 
   world_refresh(&w);
 
 /*  wborder(w.Windows.Main, '*', '*', '*', '*', '*', '*', '*', '*');*/

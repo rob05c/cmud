@@ -49,7 +49,7 @@ void handleKey(int c, world* w) {
     return;
   }
 
-  printMap(w);
+  printGui("hrm", w);
   world_refresh(w);
 }
 
