@@ -37,6 +37,19 @@ void printMap(world* w) {
 
 }
 
+void printObjects(world* w) {
+  const char* blank = "                                                           ";
+  map_object* o = map_get(w->Map, w->Location);
+  npc* n = NULL;
+  const char* msg = "Nothing is here.";
+  if(o != NULL)
+    n = npc_get(w->Npcs, o->Id);
+  if(n != NULL)
+    msg = n->Desc;
+  mvwprintw(w->Windows.Status, 2, 2, blank);
+  mvwprintw(w->Windows.Status, 2, 2, msg);
+}
+
 /* prints basic GUI that should always be visible */
 void printGui(const char* msg, world* w) {
 /*  box(stdscr, 0, 0); */
@@ -47,6 +60,8 @@ void printGui(const char* msg, world* w) {
 
   wborder(w->Windows.Main, '*', '*', '*', '*', '*', '*', '*', '*'); 
   wborder(w->Windows.Status, '#', '#', '#', '#', '#', '#', '#', '#'); 
+
+  printObjects(w);
   printMap(w); 
 }
 

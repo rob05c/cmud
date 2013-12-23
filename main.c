@@ -14,11 +14,25 @@ or created dynamically.
 */
 map_list createMap() {
   map_list list = map_create(0);
+/*
   list = map_add(list, 2, 3, '&', 1);
   list = map_add(list, 3, 3, '#', 2);
   list = map_add(list, 4, 4, '+', 3);
   list = map_add(list, 33, 24, '$', 4);
   list = map_add(list, 1, 2, '@', 5);
+*/
+  return list;
+}
+
+npc_list createNpcs(map_list mapList) {
+  npc_list list = npc_list_create(0, mapList);
+
+  list = npc_add(list, 10, 16, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100);
+  list = npc_add(list, 30, 6, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100);
+  list = npc_add(list, 9, 9, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100);
+  list = npc_add(list, 12, 42, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100);
+  list = npc_add(list, 21, 31, 'B', 2, "baker", "A rather ugly baker is standing here, baking", 500);
+  list = npc_add(list, 19, 7, 'B', 2, "candlestickmaker", "A portly candlestickmaker potters here, looking bemused.", 600);
   return list;
 }
 
@@ -33,9 +47,12 @@ void init(world* w) {
   getmaxyx(stdscr, w->WindowHeight, w->WindowWidth);
   --w->WindowHeight;
   w->Map = createMap();
+  w->Npcs = createNpcs(createMap());
+  w->Map = w->Npcs.MapList;
   w->Location = point_create(0, 0);
-  w->Color = 4;
-  w->Symbol = "☺"; 
+  w->Color = 3;
+/*  w->Symbol = "☺";  */
+  w->Symbol = "@"; 
   w->Windows = initWindows(w->WindowHeight, w->WindowWidth);
 
   char buffer[50];

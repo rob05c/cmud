@@ -94,7 +94,7 @@ map_list map_remove_object(map_list list, map_object* object) {
   map_object* iobject;
   for(i = 0, end = *list.Length; i != end; ++i) {
     iobject = &list.Objects[i];
-    if(map_object_equals(object, iobject)) {
+    if(map_object_equals(object, iobject) == 0) {
       break;
     }
   }
@@ -118,6 +118,44 @@ map_list map_objects_in_box(map_list list, int top, int left, int bottom, int ri
   return objects;
 }
 
+map_object* map_get(map_list list, point p) {
+  map_object o;
+  int i;
+  int end;
+  for(i = 0, end = *list.Length; i != end; ++i) {
+    o = list.Objects[i];
+    if(point_equals(&o.Point, &p) == 0) {
+      return &list.Objects[i];
+    }
+  }
+  return NULL;
+}
+
+
+npc_list npc_list_create(size_t initialCapacity, map_list mapList) {
+  if(initialCapacity < 1)
+    initialCapacity = 1;
+  npc_list list;
+  list.Npcs = malloc(sizeof(npc) * (long unsigned int)initialCapacity);
+  list.Length = malloc(sizeof(size_t));
+  list.Size = malloc(sizeof(size_t));
+  *list.Length = 0;
+  *list.Size = initialCapacity;
+  list.MapList = mapList;
+  return list;
+}
+
+void npc_list_destroy(npc_list list) {
+  free(list.Npcs);
+  free(list.Length);
+  free(list.Size);
+}
+
+
+int npc_equals(npc* a, npc* b) {
+  return a->MapObject.Id == a->MapObject.Id ? 0 : 1;
+}
+
 npc npc_create(int x, int y, char symbol, short color, const char* name, const char* desc, short max_health) {
   npc n; /* = {map_object_create(x, y, symbol, color), name, desc, max_health, max_health}; */
   n.MapObject = map_object_create(x, y, symbol, color);
@@ -126,6 +164,70 @@ npc npc_create(int x, int y, char symbol, short color, const char* name, const c
   n.MaxHealth = max_health;
   n.Health = max_health;
   return n;
+}
+
+npc_list npc_reallocate(npc_list list) {
+  npc* newObjects = malloc(sizeof(npc) * (long unsigned int)(*list.Size) * 2);
+  memcpy(newObjects, list.Npcs, sizeof(npc) * (long unsigned int)(*list.Length));
+  *list.Size *= 2;
+  npc* oldObjects = list.Npcs;
+  list.Npcs = newObjects;
+  free(oldObjects);
+  return list;
+}
+
+npc_list npc_add(npc_list list, 
+		 int x, 
+		 int y, 
+		 char symbol, 
+		 short color, 
+		 const char* name, 
+		 const char* desc, 
+		 short maxHealth) 
+{
+  map_object object = {next_id(), point_create(x, y), symbol, color};
+  list.MapList = map_add_object(list.MapList, object);
+  npc n = {object, name, desc, maxHealth, maxHealth};
+  return npc_add_object(list, n);
+}
+
+npc_list npc_add_object(npc_list list, npc n) {
+  if(*list.Length == *list.Size) {
+    list = npc_reallocate(list);
+  }
+  list.Npcs[*list.Length] = n;
+  ++(*list.Length);
+  return list;
+}
+
+npc_list npc_remove(npc_list list, npc* n) {
+  int i;
+  int end;
+  npc* inpc;
+  for(i = 0, end = *list.Length; i != end; ++i) {
+    inpc = &list .Npcs[i];
+    if(npc_equals(n, inpc) == 0) {
+      break;
+    }
+  }
+  for(end = end - 1; i != end; ++i) {
+    list.Npcs[i] = list.Npcs[i+1];
+  }
+  --(*list.Length);
+  return list;
+}
+
+npc* npc_get(npc_list list, id_t id) {
+  npc n;
+  int i;
+  int end;
+  for(i = 0, end = *list.Length; i != end; ++i) {
+    n = list.Npcs[i];
+    if(n.MapObject.Id == id) {
+      return &list.Npcs[i];
+    }
+  }
+  return NULL;
 }
 
 void world_refresh(world* w)

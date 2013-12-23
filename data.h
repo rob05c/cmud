@@ -40,6 +40,7 @@ map_list map_add(map_list map, int x, int y, char symbol, short color);
 map_list map_add_object(map_list map, map_object object);
 map_list map_remove_object(map_list map, map_object* object); /* removes the first object in the list which matches the given object */
 map_list map_objects_in_box(map_list list, int top, int left, int bottom, int right); /* @returns a new map_list of the objects within the given box. New map_list is new, not a modification of the old list */
+map_object* map_get(map_list list, point p);
 
 typedef struct {
   map_object MapObject;
@@ -48,10 +49,36 @@ typedef struct {
   short MaxHealth;
   short Health;
 } npc;
+
+
+typedef struct {
+  npc* Npcs;
+  size_t* Length;
+  size_t* Size;
+  map_list MapList;
+} npc_list;
+npc_list npc_list_create(size_t initialCapacity, map_list mapList);
+void npc_list_destroy(npc_list list);
+
+int npc_equals(npc* a, npc* b); /* @returns 0 iff npcs are equal */
 npc npc_create(int x, int y, char symbol, short color, const char* name, const char* desc, short max_health);
+npc_list npc_add(npc_list list, 
+		 int x, 
+		 int y, 
+		 char symbol, 
+		 short color, 
+		 const char* name, 
+		 const char* desc, 
+		 short maxHealth);
+npc_list npc_reallocate(npc_list list);
+
+npc_list npc_add_object(npc_list list, npc n);
+npc_list npc_remove(npc_list list, npc* n); /* removes the first object in the list */
+npc* npc_get(npc_list list, id_t id); /* get an npc from the list by id */
 
 typedef struct {
   map_list Map;
+  npc_list Npcs;
   point Location;
   short Color;
   const char* Symbol;
