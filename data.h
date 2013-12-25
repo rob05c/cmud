@@ -48,6 +48,7 @@ typedef struct {
   const char* Desc;
   short MaxHealth;
   short Health;
+  int Aggro;
 } npc;
 
 typedef struct {
@@ -77,7 +78,8 @@ npc_list npc_add(npc_list list,
 		 short color, 
 		 const char* name, 
 		 const char* desc, 
-		 short maxHealth);
+		 short maxHealth,
+		 int aggro);
 npc_list npc_reallocate(npc_list list);
 
 npc_list npc_add_object(npc_list list, npc n);
@@ -95,4 +97,6 @@ typedef struct {
 
 void world_refresh(world* w);
 
+void tick(world* w);
+void npc_tick(world* w, npc* n);
 #endif

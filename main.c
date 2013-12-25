@@ -1,5 +1,5 @@
-#include <ncurses.h>
 #include <string.h>
+#include <ncurses.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -26,13 +26,12 @@ map_list createMap() {
 
 npc_list createNpcs(map_list mapList) {
   npc_list list = npc_list_create(0, mapList);
-
-  list = npc_add(list, 10, 16, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100);
-  list = npc_add(list, 30, 6, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100);
-  list = npc_add(list, 9, 9, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100);
-  list = npc_add(list, 12, 42, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100);
-  list = npc_add(list, 21, 31, 'B', 2, "baker", "A rather ugly baker is standing here, baking", 500);
-  list = npc_add(list, 19, 7, 'B', 2, "candlestickmaker", "A portly candlestickmaker potters here, looking bemused.", 600);
+  list = npc_add(list, 10, 16, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, 1);
+  list = npc_add(list, 30, 6, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, true);
+  list = npc_add(list, 9, 9, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, true);
+  list = npc_add(list, 12, 42, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, true);
+  list = npc_add(list, 21, 31, 'B', 2, "baker", "A rather ugly baker is standing here, baking", 500, false);
+  list = npc_add(list, 19, 7, 'B', 2, "candlestickmaker", "A portly candlestickmaker potters here, looking bemused.", 600, false);
   return list;
 }
 
@@ -41,6 +40,7 @@ void init(world* w) {
   initscr();
   noecho();
   cbreak();
+  timeout(0); /* no input timeout (e.g. getch) */
 /*  raw(); */
   keypad(stdscr, true);
   start_color(); 
@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
 
   done = 0;
 
-  printGui("", &w); 
+  printGui(&w); 
   world_refresh(&w);
 
 /*  wborder(w.Windows.Main, '*', '*', '*', '*', '*', '*', '*', '*');*/

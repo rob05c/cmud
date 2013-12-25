@@ -183,11 +183,12 @@ npc_list npc_add(npc_list list,
 		 short color, 
 		 const char* name, 
 		 const char* desc, 
-		 short maxHealth) 
+		 short maxHealth,
+		 int aggro) 
 {
   map_object object = {next_id(), point_create(x, y), symbol, color};
   list.MapList = map_add_object(list.MapList, object);
-  npc n = {object, name, desc, maxHealth, maxHealth};
+  npc n = {object, name, desc, maxHealth, maxHealth, aggro};
   return npc_add_object(list, n);
 }
 
@@ -232,5 +233,40 @@ npc* npc_get(npc_list list, id_t id) {
 
 void world_refresh(world* w)
 {
+  windows_refresh(w->Windows);
+}
+
+/* 
+   @todo put the tick in a thread.
+         Until it is, slow ticks will make player input hang.
+*/
+void tick(world* w) {
+  npc* n;
+  int i;
+  int end;
+  npc_list list = w->Npcs;
+
+  printMessage("", w);
+  for(i = 0, end = *list.Length; i != end; ++i) {
+    n = &list.Npcs[i];
+    npc_tick(w, n);
+  }
+}
+
+void npc_tick(world* w, npc* n) {
+  if(point_equals(&n->MapObject.Point, &w->Player.Location) == 0) {
+    if(n->Aggro) {
+      char msg[200];
+      strcpy(msg, "A ");
+      strcat(msg, n->Name);
+      strcat(msg, " attacks you savagely.");
+      printMessage(msg, w);
+      if(w->Player.Health >= 10)
+	w->Player.Health -= 10;
+      else
+	w->Player.Health = 0;
+    }
+  }
+  printGui(w);
   windows_refresh(w->Windows);
 }

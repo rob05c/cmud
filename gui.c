@@ -88,6 +88,7 @@ void printPlayerStatus(world* w) {
     color = 1;
 
   x = w->WindowWidth - 20;
+  mvwprintw(w->Windows.Status, 2, x, "                   ");
   mvwprintw(w->Windows.Status, 2, x, healthLine);
   x += strlen(healthLine);
   wattron(w->Windows.Status, COLOR_PAIR(color));
@@ -99,14 +100,15 @@ void printPlayerStatus(world* w) {
   wattroff(w->Windows.Status, COLOR_PAIR(color));
 }
 
-/* prints basic GUI that should always be visible */
-void printGui(const char* msg, world* w) {
-/*  box(stdscr, 0, 0); */
-  mvwprintw(w->Windows.Main, w->WindowHeight, w->WindowWidth / 2 - strlen(msg) / 2, msg);
-  mvwprintw(w->Windows.Main, w->WindowHeight, 1,"%s", "Quadtree demo ");
-  const char* msgExit = " Press 'q' to exit";
-  mvwprintw(w->Windows.Main, w->WindowHeight, w->WindowWidth - strlen(msgExit) - 1, msgExit);
+/* @todo add room message window */
+void printMessage(const char* msg, world* w) {
+  const char* blank = "                                                                                                    ";
+  mvwprintw(w->Windows.Status, 7, 2, blank);
+  mvwprintw(w->Windows.Status, 7, 2, msg);
+}
 
+/* prints basic GUI that should always be visible */
+void printGui(world* w) {
   wborder(w->Windows.Main, '*', '*', '*', '*', '*', '*', '*', '*'); 
   wborder(w->Windows.Status, '#', '#', '#', '#', '#', '#', '#', '#'); 
 

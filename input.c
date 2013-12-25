@@ -1,17 +1,36 @@
 #include "input.h"
+#include <time.h>
 #include <ncurses.h>
 #include "gui.h"
 
 void handleInput(world* w, int* done) {
+/*  clock_t cl;*/
+  int sec;
+  int last_sec;
+  char debugC[50];
+
+  last_sec = 0;
+
   while(!*done) {
     const int c = getch();
-    if(c == KEY_MOUSE)
-      handleMouse(w);
-    else if(c == 'q') {
-      break;
+    if(c != ERR) {
+      if(c == KEY_MOUSE)
+	handleMouse(w);
+      else if(c == 'q') {
+	break;
+      }
+      else
+	handleKey(c, w);
     }
-    else
-      handleKey(c, w);
+
+    sec = clock() / CLOCKS_PER_SEC;
+    sprintf(debugC, "%d", sec);
+    mvwprintw(w->Windows.Status, 6, 5, debugC); /* debug */
+    windows_refresh(w->Windows);
+    if(last_sec != sec && sec % 2 == 0) {
+      tick(w);
+    }
+    last_sec = sec;
   }
 }
 
@@ -66,7 +85,7 @@ void handleKey(int c, world* w) {
     return;
   }
 
-  printGui("hrm", w);
+  printGui(w);
   world_refresh(w);
 }
 
