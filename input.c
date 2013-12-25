@@ -32,6 +32,7 @@ void handleKey(int c, world* w) {
     move(y, x);
   }
 */
+  mvwaddch(w->Windows.Status, 5, 5, c); /* debug */
   switch(c) {
   case KEY_UP:
     player_move(north, w);
@@ -45,6 +46,22 @@ void handleKey(int c, world* w) {
   case KEY_LEFT:
     player_move(west, w);
     break;
+  case KEY_PPAGE:
+    player_move(east, w);
+    player_move(north, w);
+    break;
+  case KEY_NPAGE:
+    player_move(east, w);
+    player_move(south, w);
+    break;
+  case KEY_HOME:
+    player_move(west, w);
+    player_move(north, w);
+    break;  
+  case KEY_END:
+    player_move(west, w);
+    player_move(south, w);
+    break;
   default:
     return;
   }
@@ -54,19 +71,20 @@ void handleKey(int c, world* w) {
 }
 
 void player_move(direction d, world* w) {
-  mvwaddch(w->Windows.Main, w->Location.Y, w->Location.X, ' ');
+  player* p = &w->Player;
+  mvwaddch(w->Windows.Main, p->Location.Y, p->Location.X, ' ');
   switch(d) {
   case north:
-    --w->Location.Y;
+    --p->Location.Y;
     break;
   case east:
-    ++w->Location.X;
+    ++p->Location.X;
     break;
   case south:
-    ++w->Location.Y;
+    ++p->Location.Y;
     break;
   case west:
-    --w->Location.X;    
+    --p->Location.X;    
     break;
   default:
     return; /* should never happen */

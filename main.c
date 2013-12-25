@@ -41,6 +41,7 @@ void init(world* w) {
   initscr();
   noecho();
   cbreak();
+/*  raw(); */
   keypad(stdscr, true);
   start_color(); 
   initColors();
@@ -49,10 +50,14 @@ void init(world* w) {
   w->Map = createMap();
   w->Npcs = createNpcs(createMap());
   w->Map = w->Npcs.MapList;
-  w->Location = point_create(0, 0);
-  w->Color = 3;
-/*  w->Symbol = "☺";  */
-  w->Symbol = "@"; 
+
+  w->Player.Location = point_create(0, 0);
+  w->Player.Color = 3;
+/*  w->Player.Symbol = "☺";  */
+  w->Player.Symbol = "@"; 
+  w->Player.Health = 500;
+  w->Player.MaxHealth = 500;
+
   w->Windows = initWindows(w->WindowHeight, w->WindowWidth);
 
   char buffer[50];

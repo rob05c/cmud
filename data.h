@@ -50,6 +50,14 @@ typedef struct {
   short Health;
 } npc;
 
+typedef struct {
+  point Location;
+  short Color;
+  const char* Symbol;
+  short MaxHealth;
+  short Health;
+} player;
+
 
 typedef struct {
   npc* Npcs;
@@ -79,9 +87,7 @@ npc* npc_get(npc_list list, id_t id); /* get an npc from the list by id */
 typedef struct {
   map_list Map;
   npc_list Npcs;
-  point Location;
-  short Color;
-  const char* Symbol;
+  player Player;
   windows Windows;
   int WindowWidth;
   int WindowHeight;

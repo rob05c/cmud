@@ -1,6 +1,7 @@
 /* ncurses gui drawing functions */
 #include <ncurses.h>
 #include <string.h>
+#include <stdio.h>
 #include "gui.h"
 #include "data.h"
 
@@ -19,11 +20,12 @@ void printMap(world* w) {
   int i;
   int end;
   map_object* o;
+  player* p = &w->Player;
   map_list localMap = map_objects_in_box(w->Map, 
-					 w->Location.Y - w->WindowHeight / 2, 
-					 w->Location.X - w->WindowWidth / 2,
-					 w->Location.Y + w->WindowHeight / 2,
-					 w->Location.X + w->WindowWidth / 2);
+					 p->Location.Y - w->WindowHeight / 2, 
+					 p->Location.X - w->WindowWidth / 2,
+					 p->Location.Y + w->WindowHeight / 2,
+					 p->Location.X + w->WindowWidth / 2);
   for(i = 0, end = *localMap.Length; i != end; ++i) {
     o = &localMap.Objects[i];
     wattron(w->Windows.Main, COLOR_PAIR(o->Color)); 
@@ -31,23 +33,70 @@ void printMap(world* w) {
     wattroff(w->Windows.Main, COLOR_PAIR(o->Color));
   }
   
-  wattron(w->Windows.Main, COLOR_PAIR(w->Color)); 
-  mvwprintw(w->Windows.Main, w->Location.Y, w->Location.X, w->Symbol);
-  wattroff(w->Windows.Main, COLOR_PAIR(w->Color));
+  wattron(w->Windows.Main, COLOR_PAIR(p->Color)); 
+  mvwprintw(w->Windows.Main, p->Location.Y, p->Location.X, p->Symbol);
+  wattroff(w->Windows.Main, COLOR_PAIR(p->Color));
 
 }
 
 void printObjects(world* w) {
   const char* blank = "                                                           ";
-  map_object* o = map_get(w->Map, w->Location);
+  map_object* o = map_get(w->Map, w->Player.Location);
   npc* n = NULL;
-  const char* msg = "Nothing is here.";
+  int color;
+  float hPercent;
+  mvwprintw(w->Windows.Status, 2, 2, blank);
+
   if(o != NULL)
     n = npc_get(w->Npcs, o->Id);
-  if(n != NULL)
-    msg = n->Desc;
-  mvwprintw(w->Windows.Status, 2, 2, blank);
-  mvwprintw(w->Windows.Status, 2, 2, msg);
+  if(n == NULL)
+    mvwprintw(w->Windows.Status, 2, 2, "Nothing is here.");
+  else {
+    hPercent = ((float)n->Health) / n->MaxHealth;
+    if(hPercent > 0.66)
+      color = 3;
+    else if(hPercent > 0.33)
+      color = 4;
+    else
+      color = 1;
+    wattron(w->Windows.Status, COLOR_PAIR(color));
+    mvwaddch(w->Windows.Status, 2, 2, n->MapObject.Symbol);
+    wattroff(w->Windows.Status, COLOR_PAIR(color));
+    mvwprintw(w->Windows.Status, 2, 4, n->Desc);
+  }
+}
+
+void printPlayerStatus(world* w) {
+/*  player* p = &w->Player;*/
+  char healthLine[50];
+  char healthString[50];
+  char maxHealthString[50];
+  int x;
+  int color;
+  float healthPercent;
+
+  strcpy(healthLine, "Health: ");
+  sprintf(healthString, "%d", w->Player.Health);
+  sprintf(maxHealthString, "%d", w->Player.MaxHealth);
+
+  healthPercent = ((float)w->Player.Health) / w->Player.MaxHealth;
+  if(healthPercent > 0.66)
+    color = 3;
+  else if(healthPercent > 0.33)
+    color = 4;
+  else
+    color = 1;
+
+  x = w->WindowWidth - 20;
+  mvwprintw(w->Windows.Status, 2, x, healthLine);
+  x += strlen(healthLine);
+  wattron(w->Windows.Status, COLOR_PAIR(color));
+  mvwprintw(w->Windows.Status, 2, x, healthString);
+  x += strlen(healthString);
+  mvwprintw(w->Windows.Status, 2, x, "/");
+  x += 1;
+  mvwprintw(w->Windows.Status, 2, x, maxHealthString);
+  wattroff(w->Windows.Status, COLOR_PAIR(color));
 }
 
 /* prints basic GUI that should always be visible */
@@ -62,6 +111,7 @@ void printGui(const char* msg, world* w) {
   wborder(w->Windows.Status, '#', '#', '#', '#', '#', '#', '#', '#'); 
 
   printObjects(w);
+  printPlayerStatus(w);
   printMap(w); 
 }
 
