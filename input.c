@@ -2,6 +2,7 @@
 #include <time.h>
 #include <ncurses.h>
 #include "gui.h"
+#include "string.h"
 
 void handleInput(world* w, int* done) {
 /*  clock_t cl;*/
@@ -81,6 +82,9 @@ void handleKey(int c, world* w) {
     player_move(west, w);
     player_move(south, w);
     break;
+  case 'k':
+    player_attack(w);
+    break;
   default:
     return;
   }
@@ -110,3 +114,24 @@ void player_move(direction d, world* w) {
   }
 }
 
+void player_attack(world* w) {
+  const char* attackMsg = "You hack into "; 
+  map_object* o = map_get(w->Map, w->Player.Location);
+  npc* n = NULL;
+  int xpos = 2;
+  const int ypos = 5;
+
+  if(o != NULL)
+    n = npc_get(w->Npcs, o->Id);
+  if(n == NULL) {
+    mvwprintw(w->Windows.Status, 5, 2, "You slash aimlessly at the air.");
+    return;
+  }
+
+  mvwprintw(w->Windows.Status, ypos, xpos, attackMsg);
+  xpos += strlen(attackMsg);
+  mvwprintw(w->Windows.Status, ypos, xpos, n->Desc);
+  xpos += strlen(n->Desc);
+  mvwprintw(w->Windows.Status, ypos, xpos, ".");
+  n->Health -= 10;
+}

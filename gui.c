@@ -49,21 +49,22 @@ void printObjects(world* w) {
 
   if(o != NULL)
     n = npc_get(w->Npcs, o->Id);
-  if(n == NULL)
+  if(n == NULL) {
     mvwprintw(w->Windows.Status, 2, 2, "Nothing is here.");
-  else {
-    hPercent = ((float)n->Health) / n->MaxHealth;
-    if(hPercent > 0.66)
-      color = 3;
-    else if(hPercent > 0.33)
-      color = 4;
-    else
-      color = 1;
-    wattron(w->Windows.Status, COLOR_PAIR(color));
-    mvwaddch(w->Windows.Status, 2, 2, n->MapObject.Symbol);
-    wattroff(w->Windows.Status, COLOR_PAIR(color));
-    mvwprintw(w->Windows.Status, 2, 4, n->Desc);
+    return;
   }
+
+  hPercent = ((float)n->Health) / n->MaxHealth;
+  if(hPercent > 0.66)
+    color = 3;
+  else if(hPercent > 0.33)
+    color = 4;
+  else
+    color = 1;
+  wattron(w->Windows.Status, COLOR_PAIR(color));
+  mvwaddch(w->Windows.Status, 2, 2, n->MapObject.Symbol);
+  wattroff(w->Windows.Status, COLOR_PAIR(color));
+  mvwprintw(w->Windows.Status, 2, 4, n->Desc);
 }
 
 void printPlayerStatus(world* w) {

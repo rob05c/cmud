@@ -10,5 +10,6 @@ void handleMouse(world* w);
 void handleKey(int c, world* w);
 
 void player_move(direction d, world* w);
+void player_attack(world* w);
 
 #endif
