@@ -7,7 +7,7 @@
 /* use to build with -Wextra with unused function params */
 #define UNUSED(x) (void)(x)
 
-typedef long long id_t;
+typedef unsigned long id_t;
 id_t next_id(); /* totally not threadsafe  */
 
 /* this ought to be in gui.h, but that would be a circular dependency */

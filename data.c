@@ -11,7 +11,9 @@ id_t next_id() {
 }
 
 point point_create(int x, int y) {
-  point p = {x, y};
+  point p;
+  p.X = x;
+  p.Y = y;
   return p;
 }
 
@@ -26,8 +28,13 @@ int point_equals(point* a, point* b) {
 }
 
 map_object map_object_create(int x, int y, char symbol, short color) {
-  map_object object = {next_id(), point_create(x, y), symbol, color};
-  return object;
+  map_object o;
+  o.Id = next_id();
+  o.Point.X = x;
+  o.Point.Y = y;
+  o.Symbol = symbol;
+  o.Color = color;
+  return o;
 }
 
 int map_object_equals(map_object* a, map_object* b) {
@@ -47,9 +54,10 @@ int map_object_equals(map_object* a, map_object* b) {
 
 
 map_list map_create(size_t initialCapacity) {
+  map_list list;
+
   if(initialCapacity < 1)
     initialCapacity = 1;
-  map_list list;
   list.Objects = malloc(sizeof(map_object) * (long unsigned int)initialCapacity);
   list.Length = malloc(sizeof(size_t));
   list.Size = malloc(sizeof(size_t));
@@ -66,17 +74,23 @@ void map_destroy(map_list list) {
 
 map_list map_reallocate(map_list list) {
   map_object* newObjects = malloc(sizeof(map_object) * (long unsigned int)(*list.Size) * 2);
+  map_object* oldObjects = list.Objects;
+
   memcpy(newObjects, list.Objects, sizeof(map_object) * (long unsigned int)(*list.Length));
   *list.Size *= 2;
-  map_object* oldObjects = list.Objects;
   list.Objects = newObjects;
   free(oldObjects);
   return list;
 }
 
 map_list map_add(map_list list, int x, int y, char symbol, short color) {
-  map_object object = {next_id(), point_create(x, y), symbol, color};
-  return map_add_object(list, object);
+  map_object o;
+  o.Id = next_id();
+  o.Point.X = x;
+  o.Point.Y = y;
+  o.Symbol = symbol;
+  o.Color = color;
+  return map_add_object(list, o);
 }
 
 map_list map_add_object(map_list list, map_object object) {
@@ -133,9 +147,10 @@ map_object* map_get(map_list list, point p) {
 
 
 npc_list npc_list_create(size_t initialCapacity, map_list mapList) {
+  npc_list list;
+
   if(initialCapacity < 1)
     initialCapacity = 1;
-  npc_list list;
   list.Npcs = malloc(sizeof(npc) * (long unsigned int)initialCapacity);
   list.Length = malloc(sizeof(size_t));
   list.Size = malloc(sizeof(size_t));
@@ -167,10 +182,11 @@ npc npc_create(int x, int y, char symbol, short color, const char* name, const c
 }
 
 npc_list npc_reallocate(npc_list list) {
+  npc* oldObjects = list.Npcs;
+
   npc* newObjects = malloc(sizeof(npc) * (long unsigned int)(*list.Size) * 2);
   memcpy(newObjects, list.Npcs, sizeof(npc) * (long unsigned int)(*list.Length));
   *list.Size *= 2;
-  npc* oldObjects = list.Npcs;
   list.Npcs = newObjects;
   free(oldObjects);
   return list;
@@ -186,9 +202,23 @@ npc_list npc_add(npc_list list,
 		 short maxHealth,
 		 int aggro) 
 {
-  map_object object = {next_id(), point_create(x, y), symbol, color};
-  list.MapList = map_add_object(list.MapList, object);
-  npc n = {object, name, desc, maxHealth, maxHealth, aggro};
+  map_object o;
+  npc n;
+
+  o.Id = next_id();
+  o.Point.X = x;
+  o.Point.Y = y;
+  o.Symbol = symbol;
+  o.Color = color;
+  list.MapList = map_add_object(list.MapList, o);
+
+  n.MapObject = o;
+  n.Name = name;
+  n.Desc = desc;
+  n.MaxHealth = maxHealth;
+  n.Health = maxHealth;
+  n.Aggro = aggro;
+
   return npc_add_object(list, n);
 }
 

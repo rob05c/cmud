@@ -36,6 +36,8 @@ npc_list createNpcs(map_list mapList) {
 }
 
 void init(world* w) {
+  char buffer[50];
+
   setlocale(LC_ALL, "");
   initscr();
   noecho();
@@ -60,7 +62,6 @@ void init(world* w) {
 
   w->Windows = initWindows(w->WindowHeight, w->WindowWidth);
 
-  char buffer[50];
   sprintf(buffer, "points: %d", (int)*w->Map.Length); /* debug (mostly) */
   curs_set(0); /* hide cursor */ 
   move(0,0);

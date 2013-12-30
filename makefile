@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-c -Wall -Wextra -O3 -std=c89 -g
+CFLAGS=-c -Wall -Wextra -pedantic -O3 -std=c89 -g
 
 all: cmud
 cmud: main.o data.o gui.o input.o
