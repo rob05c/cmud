@@ -153,7 +153,7 @@ void npc_list_destroy(npc_list list) {
 
 
 int npc_equals(npc* a, npc* b) {
-  return a->MapObject.Id == a->MapObject.Id ? 0 : 1;
+  return a->MapObject.Id == b->MapObject.Id ? 0 : 1;
 }
 
 npc npc_create(int x, int y, char symbol, short color, const char* name, const char* desc, short max_health) {
