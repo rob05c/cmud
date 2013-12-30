@@ -36,6 +36,7 @@ void handleInput(world* w, int* done) {
 }
 
 void handleMouse(world* w) {
+  UNUSED(w);
   MEVENT e;
   getmouse(&e);
 /*  insertPoint(e.y, e.x, q); */

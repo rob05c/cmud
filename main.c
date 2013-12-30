@@ -70,7 +70,8 @@ void init(world* w) {
 }
 
 
-int main(int argc, char** argv) {
+/*int main(int argc, char** argv) { */
+int main() {
   world w;
   int done;
   init(&w);

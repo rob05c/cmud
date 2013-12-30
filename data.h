@@ -4,6 +4,9 @@
 #include <stddef.h> /* needed for size_t */
 #include <ncurses.h> /* needed for WINDOW */
 
+/* use to build with -Wextra with unused function params */
+#define UNUSED(x) (void)(x)
+
 typedef long long id_t;
 id_t next_id(); /* totally not threadsafe  */
 
