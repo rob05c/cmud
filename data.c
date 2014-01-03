@@ -73,13 +73,9 @@ void map_destroy(map_list list) {
 }
 
 map_list map_reallocate(map_list list) {
-  map_object* newObjects = malloc(sizeof(map_object) * (long unsigned int)(*list.Size) * 2);
-  map_object* oldObjects = list.Objects;
-
-  memcpy(newObjects, list.Objects, sizeof(map_object) * (long unsigned int)(*list.Length));
-  *list.Size *= 2;
-  list.Objects = newObjects;
-  free(oldObjects);
+  const int FACTOR = 2;
+  *list.Size *= FACTOR;
+  list.Objects = realloc(list.Objects, (sizeof(map_object) * (long unsigned int)(*list.Size) * FACTOR));
   return list;
 }
 
@@ -182,13 +178,9 @@ npc npc_create(int x, int y, char symbol, short color, const char* name, const c
 }
 
 npc_list npc_reallocate(npc_list list) {
-  npc* oldObjects = list.Npcs;
-
-  npc* newObjects = malloc(sizeof(npc) * (long unsigned int)(*list.Size) * 2);
-  memcpy(newObjects, list.Npcs, sizeof(npc) * (long unsigned int)(*list.Length));
-  *list.Size *= 2;
-  list.Npcs = newObjects;
-  free(oldObjects);
+  const int FACTOR = 2;
+  *list.Size *= FACTOR;
+  list.Npcs = realloc(list.Npcs, (sizeof(map_object) * (long unsigned int)(*list.Size) * FACTOR));
   return list;
 }
 
