@@ -136,14 +136,21 @@ void player_attack(world* w) {
   xpos += strlen(n->Desc);
   mvwprintw(w->Windows.Status, ypos, xpos, ".");
   n->Health -= 10;
+  if(n->Health <= 0)
+    npc_kill(w, n);
 }
 
 void npc_kill(world* w, npc* n) {
-  UNUSED(w); /*debug*/
-  UNUSED(n); /*debug*/
+  npc this = *n; /* yeah, I went there */
+  n->Dead = 1;
+  n->reviveTime = time(0) + 60; /* @todo fix this to not rely on time_t being seconds (it's not guaranteed) */
+  npc_remove(&w->Npcs, n);
+  npc_add_object(&w->deadNpcs, this);
 }
 
 void npc_revive(world* w, npc* n) {
-  UNUSED(w); /*debug*/
-  UNUSED(n); /*debug*/
+  npc this = *n; /* copy, because n is stack-allocated and we're about to remove it */
+  npc_remove(&w->deadNpcs, n);
+  npc_add_object(&w->Npcs, this);
+  map_add_object(&w->Map, this.MapObject);
 }

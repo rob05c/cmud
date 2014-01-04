@@ -3,7 +3,7 @@
 
 #include <stddef.h> /* needed for size_t */
 #include <ncurses.h> /* needed for WINDOW */
-
+#include <time.h> /* needed for time_t */
 /* use to build with -Wextra with unused function params */
 #define UNUSED(x) (void)(x)
 
@@ -56,6 +56,7 @@ typedef struct {
   short Health;
   int Aggro;
   int Dead;
+  time_t reviveTime;
 } npc;
 
 typedef struct {

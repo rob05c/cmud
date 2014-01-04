@@ -190,6 +190,9 @@ npc npc_create(int x, int y, char symbol, short color, const char* name, const c
   n.Desc = desc;
   n.MaxHealth = max_health;
   n.Health = max_health;
+  n.Aggro = 0;
+  n.Dead = 0;
+  n.reviveTime = 0;
   return n;
 }
 
@@ -226,7 +229,7 @@ void npc_add(npc_list* list,
   n.Health = maxHealth;
   n.Aggro = aggro;
   n.Dead = 0;
-
+  n.reviveTime = 0;
   npc_add_object(list, n);
 }
 
