@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "gui.h"
+#include "input.h"
 
 void debug_print_int(int i) {
   FILE* f = fopen("debug", "a+");
@@ -120,6 +121,9 @@ void map_remove_object(map_list* list, map_object* object) {
       break;
     }
   }
+  if(i == end)
+    return; /* @todo handle failure */
+
   for(end = end - 1; i != end; ++i) {
     list->Objects[i] = list->Objects[i+1];
   }
@@ -255,6 +259,7 @@ void npc_remove(npc_list* list, npc* n) {
   if(i == end)
     return; /* @todo handle failure */
 
+  /* @todo determine what to do, because the npc doesn't necessarily have a map_object in a list, e.g. the deadNpcs list */
   map_remove_object(list->MapList, &inpc->MapObject);
 
   for(end = end - 1; i != end; ++i) {
@@ -291,7 +296,19 @@ void tick(world* w) {
   int end;
   npc_list* list = &w->Npcs;
 
-  printMessage("", w);
+
+  npc_list* dead = &w->deadNpcs;
+  time_t now = time(0);
+
+  for(i = 0, end = *dead->Length; i != end; ++i) {
+    n = &dead->Npcs[i];
+    if(n->reviveTime < now) {
+      npc_revive(w, n);
+    }
+  }
+
+
+  printMessage("", w); /* clear attack message line */
   for(i = 0, end = *list->Length; i != end; ++i) {
     n = &list->Npcs[i];
     npc_tick(w, n);

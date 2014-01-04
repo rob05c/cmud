@@ -4,6 +4,10 @@
 #include "gui.h"
 #include "string.h"
 
+/* 
+   We want to put the tick in its own thread, but that isn't easy 
+   That requires user input and tick to synchronize data access, e.g. via mutexes
+*/
 void handleInput(world* w, int* done) {
 /*  clock_t cl;*/
   int sec;
@@ -141,15 +145,18 @@ void player_attack(world* w) {
 }
 
 void npc_kill(world* w, npc* n) {
+  const int DEATH_TIME = 5;
   npc this = *n; /* yeah, I went there */
-  n->Dead = 1;
-  n->reviveTime = time(0) + 60; /* @todo fix this to not rely on time_t being seconds (it's not guaranteed) */
+  this.Dead = 1;
+  this.reviveTime = time(0) + DEATH_TIME; /* @todo fix this to not rely on time_t being seconds (it's not guaranteed) */
   npc_remove(&w->Npcs, n);
   npc_add_object(&w->deadNpcs, this);
 }
 
 void npc_revive(world* w, npc* n) {
   npc this = *n; /* copy, because n is stack-allocated and we're about to remove it */
+  this.Dead = 0;
+  this.Health = this.MaxHealth;
   npc_remove(&w->deadNpcs, n);
   npc_add_object(&w->Npcs, this);
   map_add_object(&w->Map, this.MapObject);
