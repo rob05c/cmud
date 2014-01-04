@@ -52,7 +52,6 @@ int map_object_equals(map_object* a, map_object* b) {
   */
 }
 
-
 map_list map_create(size_t initialCapacity) {
   map_list list;
 
@@ -66,83 +65,85 @@ map_list map_create(size_t initialCapacity) {
   return list;
 }
 
-void map_destroy(map_list list) {
-  free(list.Objects);
-  free(list.Length);
-  free(list.Size);
+/* does NOT free the map_list pointer. This is so it may be allocated on the stack */
+void map_destroy(map_list* list) {
+  free(list->Objects);
+  free(list->Length);
+  free(list->Size);
 }
 
-map_list map_reallocate(map_list list) {
+void map_reallocate(map_list* list) {
   const int FACTOR = 2;
-  *list.Size *= FACTOR;
-  list.Objects = realloc(list.Objects, (sizeof(map_object) * (long unsigned int)(*list.Size) * FACTOR));
-  return list;
+  *list->Size *= FACTOR;
+  list->Objects = realloc(list->Objects, (sizeof(map_object) * (long unsigned int)(*list->Size) * FACTOR));
 }
 
-map_list map_add(map_list list, int x, int y, char symbol, short color) {
+void map_add(map_list* list, int x, int y, char symbol, short color) {
   map_object o;
   o.Id = next_id();
   o.Point.X = x;
   o.Point.Y = y;
   o.Symbol = symbol;
   o.Color = color;
-  return map_add_object(list, o);
+  map_add_object(list, o);
 }
 
-map_list map_add_object(map_list list, map_object object) {
-  if(*list.Length == *list.Size) {
-    list = map_reallocate(list);
+void map_add_object(map_list* list, map_object object) {
+  if(*list->Length == *list->Size) {
+    map_reallocate(list);
   }
-  list.Objects[*list.Length] = object;
-  ++(*list.Length);
-  return list;
+  list->Objects[*list->Length] = object;
+  ++(*list->Length);
 }
 
-map_list map_remove_object(map_list list, map_object* object) {
+void map_remove_object(map_list* list, map_object* object) {
   int i;
   int end;
   map_object* iobject;
-  for(i = 0, end = *list.Length; i != end; ++i) {
-    iobject = &list.Objects[i];
+  for(i = 0, end = *list->Length; i != end; ++i) {
+    iobject = &list->Objects[i];
     if(map_object_equals(object, iobject) == 0) {
       break;
     }
   }
   for(end = end - 1; i != end; ++i) {
-    list.Objects[i] = list.Objects[i+1];
+    list->Objects[i] = list->Objects[i+1];
   }
-  --(*list.Length);
-  return list;
+  --(*list->Length);
 }
 
-map_list map_objects_in_box(map_list list, int top, int left, int bottom, int right) {
+/* 
+   This returns a copy, so the caller can assign it on the stack. This could return a malloced pointer to avoid copying, if necessary 
+   Note the objects are not copied, and thus this new map should be destroyed without freeing its member objects
+*/
+map_list map_objects_in_box(map_list* list, int top, int left, int bottom, int right) {
   map_list objects = map_create(0);
   map_object* o;
   int i;
   int end;
-  for(i = 0, end = *list.Length; i != end; ++i) {
-    o = &list.Objects[i];
+  for(i = 0, end = *list->Length; i != end; ++i) {
+    o = &list->Objects[i];
     if(o->Point.X >= left && o->Point.X <= right && o->Point.Y >= top && o->Point.Y <= bottom)
-      objects = map_add_object(objects, *o);
+      map_add_object(&objects, *o);
   }
   return objects;
 }
 
-map_object* map_get(map_list list, point p) {
-  map_object o;
+map_object* map_get(map_list* list, point p) {
+  map_object* o;
   int i;
   int end;
-  for(i = 0, end = *list.Length; i != end; ++i) {
-    o = list.Objects[i];
-    if(point_equals(&o.Point, &p) == 0) {
-      return &list.Objects[i];
+  for(i = 0, end = *list->Length; i != end; ++i) {
+    o = &list->Objects[i];
+    if(point_equals(&o->Point, &p) == 0) {
+      return o;
     }
   }
-  return NULL;
+  return 0;
 }
 
 
-npc_list npc_list_create(size_t initialCapacity, map_list mapList) {
+npc_list npc_list_create(size_t initialCapacity, map_list* mapList) {
   npc_list list;
 
   if(initialCapacity < 1)
@@ -156,10 +157,11 @@ npc_list npc_list_create(size_t initialCapacity, map_list mapList) {
   return list;
 }
 
-void npc_list_destroy(npc_list list) {
-  free(list.Npcs);
-  free(list.Length);
-  free(list.Size);
+/* note this does not free the npc_list pointer, so it can be stack-allocated */
+void npc_list_destroy(npc_list* list) {
+  free(list->Npcs);
+  free(list->Length);
+  free(list->Size);
 }
 
 
@@ -177,14 +179,13 @@ npc npc_create(int x, int y, char symbol, short color, const char* name, const c
   return n;
 }
 
-npc_list npc_reallocate(npc_list list) {
+void npc_reallocate(npc_list* list) {
   const int FACTOR = 2;
-  *list.Size *= FACTOR;
-  list.Npcs = realloc(list.Npcs, (sizeof(map_object) * (long unsigned int)(*list.Size) * FACTOR));
-  return list;
+  *list->Size *= FACTOR;
+  list->Npcs = realloc(list->Npcs, (sizeof(map_object) * (long unsigned int)(*list->Size) * FACTOR));
 }
 
-npc_list npc_add(npc_list list, 
+void npc_add(npc_list* list, 
 		 int x, 
 		 int y, 
 		 char symbol, 
@@ -202,7 +203,7 @@ npc_list npc_add(npc_list list,
   o.Point.Y = y;
   o.Symbol = symbol;
   o.Color = color;
-  list.MapList = map_add_object(list.MapList, o);
+  map_add_object(list->MapList, o);
 
   n.MapObject = o;
   n.Name = name;
@@ -211,46 +212,44 @@ npc_list npc_add(npc_list list,
   n.Health = maxHealth;
   n.Aggro = aggro;
 
-  return npc_add_object(list, n);
+  npc_add_object(list, n);
 }
 
-npc_list npc_add_object(npc_list list, npc n) {
-  if(*list.Length == *list.Size) {
-    list = npc_reallocate(list);
+void npc_add_object(npc_list* list, npc n) {
+  if(*list->Length == *list->Size) {
+    npc_reallocate(list);
   }
-  list.Npcs[*list.Length] = n;
-  ++(*list.Length);
-  return list;
+  list->Npcs[*list->Length] = n;
+  ++(*list->Length);
 }
 
-npc_list npc_remove(npc_list list, npc* n) {
+void npc_remove(npc_list* list, npc* n) {
   int i;
   int end;
   npc* inpc;
-  for(i = 0, end = *list.Length; i != end; ++i) {
-    inpc = &list .Npcs[i];
+  for(i = 0, end = *list->Length; i != end; ++i) {
+    inpc = &list->Npcs[i];
     if(npc_equals(n, inpc) == 0) {
       break;
     }
   }
   for(end = end - 1; i != end; ++i) {
-    list.Npcs[i] = list.Npcs[i+1];
+    list->Npcs[i] = list->Npcs[i+1];
   }
-  --(*list.Length);
-  return list;
+  --(*list->Length);
 }
 
-npc* npc_get(npc_list list, id_t id) {
-  npc n;
+npc* npc_get(npc_list* list, id_t id) {
+  npc* n;
   int i;
   int end;
-  for(i = 0, end = *list.Length; i != end; ++i) {
-    n = list.Npcs[i];
-    if(n.MapObject.Id == id) {
-      return &list.Npcs[i];
+  for(i = 0, end = *list->Length; i != end; ++i) {
+    n = &list->Npcs[i];
+    if(n->MapObject.Id == id) {
+      return n;
     }
   }
-  return NULL;
+  return 0;
 }
 
 void world_refresh(world* w)
@@ -266,11 +265,11 @@ void tick(world* w) {
   npc* n;
   int i;
   int end;
-  npc_list list = w->Npcs;
+  npc_list* list = &w->Npcs;
 
   printMessage("", w);
-  for(i = 0, end = *list.Length; i != end; ++i) {
-    n = &list.Npcs[i];
+  for(i = 0, end = *list->Length; i != end; ++i) {
+    n = &list->Npcs[i];
     npc_tick(w, n);
   }
 }

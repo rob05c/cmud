@@ -118,13 +118,13 @@ void player_move(direction d, world* w) {
 
 void player_attack(world* w) {
   const char* attackMsg = "You hack into "; 
-  map_object* o = map_get(w->Map, w->Player.Location);
+  map_object* o = map_get(&w->Map, w->Player.Location);
   npc* n = NULL;
   int xpos = 2;
   const int ypos = 5;
 
   if(o != NULL)
-    n = npc_get(w->Npcs, o->Id);
+    n = npc_get(&w->Npcs, o->Id);
   if(n == NULL) {
     mvwprintw(w->Windows.Status, 5, 2, "You slash aimlessly at the air.");
     return;

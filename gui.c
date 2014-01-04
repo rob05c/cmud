@@ -21,7 +21,7 @@ void printMap(world* w) {
   int end;
   map_object* o;
   player* p = &w->Player;
-  map_list localMap = map_objects_in_box(w->Map, 
+  map_list localMap = map_objects_in_box(&w->Map, 
 					 p->Location.Y - w->WindowHeight / 2, 
 					 p->Location.X - w->WindowWidth / 2,
 					 p->Location.Y + w->WindowHeight / 2,
@@ -41,14 +41,14 @@ void printMap(world* w) {
 
 void printObjects(world* w) {
   const char* blank = "                                                           ";
-  map_object* o = map_get(w->Map, w->Player.Location);
+  map_object* o = map_get(&w->Map, w->Player.Location);
   npc* n = NULL;
   int color;
   float hPercent;
   mvwprintw(w->Windows.Status, 2, 2, blank);
 
   if(o != NULL)
-    n = npc_get(w->Npcs, o->Id);
+    n = npc_get(&w->Npcs, o->Id);
   if(n == NULL) {
     mvwprintw(w->Windows.Status, 2, 2, "Nothing is here.");
     return;

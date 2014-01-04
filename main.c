@@ -24,14 +24,14 @@ map_list createMap() {
   return list;
 }
 
-npc_list createNpcs(map_list mapList) {
+npc_list createNpcs(map_list* mapList) {
   npc_list list = npc_list_create(0, mapList);
-  list = npc_add(list, 10, 16, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, 1);
-  list = npc_add(list, 30, 6, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, true);
-  list = npc_add(list, 9, 9, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, true);
-  list = npc_add(list, 12, 42, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, true);
-  list = npc_add(list, 21, 31, 'B', 2, "baker", "A rather ugly baker is standing here, baking", 500, false);
-  list = npc_add(list, 19, 7, 'B', 2, "candlestickmaker", "A portly candlestickmaker potters here, looking bemused.", 600, false);
+  npc_add(&list, 10, 16, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, 1);
+  npc_add(&list, 30, 6, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, true);
+  npc_add(&list, 9, 9, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, true);
+  npc_add(&list, 12, 42, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, true);
+  npc_add(&list, 21, 31, 'B', 2, "baker", "A rather ugly baker is standing here, baking", 500, false);
+  npc_add(&list, 19, 7, 'B', 2, "candlestickmaker", "A portly candlestickmaker potters here, looking bemused.", 600, false);
   return list;
 }
 
@@ -50,9 +50,7 @@ void init(world* w) {
   getmaxyx(stdscr, w->WindowHeight, w->WindowWidth);
   --w->WindowHeight;
   w->Map = createMap();
-  w->Npcs = createNpcs(createMap());
-  w->Map = w->Npcs.MapList;
-
+  w->Npcs = createNpcs(&w->Map);
   w->Player.Location = point_create(0, 0);
   w->Player.Color = 3;
 /*  w->Player.Symbol = "☺";  */
