@@ -5,6 +5,20 @@
 #include <stdio.h>
 #include "gui.h"
 
+void debug_print_int(int i) {
+  FILE* f = fopen("debug", "a+");
+  fprintf(f, "%d\n", i);
+  fclose(f);
+}
+
+void debug_print_string(const char* s) {
+  FILE* f = fopen("debug", "a+");
+  fputs(s, f);
+  fclose(f);
+}
+
+
+
 id_t next_id() {
   static id_t id;
   return id++;
@@ -182,7 +196,7 @@ npc npc_create(int x, int y, char symbol, short color, const char* name, const c
 void npc_reallocate(npc_list* list) {
   const int FACTOR = 2;
   *list->Size *= FACTOR;
-  list->Npcs = realloc(list->Npcs, (sizeof(map_object) * (long unsigned int)(*list->Size) * FACTOR));
+  list->Npcs = realloc(list->Npcs, sizeof(npc) * (long unsigned int)(*list->Size) * FACTOR);
 }
 
 void npc_add(npc_list* list, 
@@ -211,6 +225,7 @@ void npc_add(npc_list* list,
   n.MaxHealth = maxHealth;
   n.Health = maxHealth;
   n.Aggro = aggro;
+  n.Dead = 0;
 
   npc_add_object(list, n);
 }
@@ -223,6 +238,7 @@ void npc_add_object(npc_list* list, npc n) {
   ++(*list->Length);
 }
 
+
 void npc_remove(npc_list* list, npc* n) {
   int i;
   int end;
@@ -233,6 +249,11 @@ void npc_remove(npc_list* list, npc* n) {
       break;
     }
   }
+  if(i == end)
+    return; /* @todo handle failure */
+
+  map_remove_object(list->MapList, &inpc->MapObject);
+
   for(end = end - 1; i != end; ++i) {
     list->Npcs[i] = list->Npcs[i+1];
   }

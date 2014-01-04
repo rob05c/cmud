@@ -137,3 +137,13 @@ void player_attack(world* w) {
   mvwprintw(w->Windows.Status, ypos, xpos, ".");
   n->Health -= 10;
 }
+
+void npc_kill(world* w, npc* n) {
+  UNUSED(w); /*debug*/
+  UNUSED(n); /*debug*/
+}
+
+void npc_revive(world* w, npc* n) {
+  UNUSED(w); /*debug*/
+  UNUSED(n); /*debug*/
+}

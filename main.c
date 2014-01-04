@@ -25,8 +25,17 @@ map_list createMap() {
 }
 
 npc_list createNpcs(map_list* mapList) {
+  /*debug*/
+  map_object* o;
+  npc* n; 
   npc_list list = npc_list_create(0, mapList);
-  npc_add(&list, 10, 16, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, 1);
+  npc_add(&list, 10, 16, 'Q', 1, "qoblin", "A supremely grotesque qoblin is standing here.", 100, 1);
+
+  /* debug */
+  o = map_get(mapList, point_create(10, 16));
+  n = npc_get(&list, o->Id);
+  npc_remove(&list, n);
+
   npc_add(&list, 30, 6, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, true);
   npc_add(&list, 9, 9, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, true);
   npc_add(&list, 12, 42, 'G', 1, "goblin", "A rather ugly goblin is standing here.", 100, true);
@@ -51,6 +60,7 @@ void init(world* w) {
   --w->WindowHeight;
   w->Map = createMap();
   w->Npcs = createNpcs(&w->Map);
+  w->deadNpcs = npc_list_create(0, &w->Map);
   w->Player.Location = point_create(0, 0);
   w->Player.Color = 3;
 /*  w->Player.Symbol = "☺";  */

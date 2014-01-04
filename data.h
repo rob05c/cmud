@@ -47,6 +47,7 @@ void map_remove_object(map_list* map, map_object* object); /* removes the first 
 map_list map_objects_in_box(map_list* list, int top, int left, int bottom, int right); /* @returns a new map_list of the objects within the given box. New map_list is new, not a modification of the old list */
 map_object* map_get(map_list* list, point p);
 
+/* @todo pack booleans */
 typedef struct {
   map_object MapObject;
   const char* Name;
@@ -54,6 +55,7 @@ typedef struct {
   short MaxHealth;
   short Health;
   int Aggro;
+  int Dead;
 } npc;
 
 typedef struct {
@@ -76,6 +78,7 @@ void npc_list_destroy(npc_list* list);
 
 int npc_equals(npc* a, npc* b); /* @returns 0 iff npcs are equal */
 npc npc_create(int x, int y, char symbol, short color, const char* name, const char* desc, short max_health);
+/* @todo return npc created? */
 void npc_add(npc_list* list, 
 		 int x, 
 		 int y, 
@@ -97,6 +100,8 @@ typedef struct {
   windows Windows;
   int WindowWidth;
   int WindowHeight;
+
+  npc_list deadNpcs;
 } world;
 
 void world_refresh(world* w);

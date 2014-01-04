@@ -11,5 +11,7 @@ void handleKey(int c, world* w);
 
 void player_move(direction d, world* w);
 void player_attack(world* w);
+void npc_kill(world* w, npc* n);
+void npc_revive(world* w, npc* n);
 
 #endif
