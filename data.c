@@ -160,6 +160,9 @@ map_object* map_get(map_list* list, point p) {
   return 0;
 }
 
+int player_level(player* p) {
+  return p->Experience / 40 + 1;
+}
 
 npc_list npc_list_create(size_t initialCapacity, map_list* mapList) {
   npc_list list;

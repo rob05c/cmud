@@ -65,8 +65,10 @@ typedef struct {
   const char* Symbol;
   short MaxHealth;
   short Health;
+  unsigned long Experience;
 } player;
 
+int player_level(player* p);
 
 typedef struct {
   npc* Npcs;

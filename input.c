@@ -146,7 +146,10 @@ void player_attack(world* w) {
 
 void npc_kill(world* w, npc* n) {
   const int DEATH_TIME = 5;
+  const int EXPERIENCE = 10;
   npc this = *n; /* yeah, I went there */
+
+  w->Player.Experience += EXPERIENCE;
   this.Dead = 1;
   this.reviveTime = time(0) + DEATH_TIME; /* @todo fix this to not rely on time_t being seconds (it's not guaranteed) */
   npc_remove(&w->Npcs, n);

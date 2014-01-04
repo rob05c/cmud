@@ -67,6 +67,7 @@ void init(world* w) {
   w->Player.Symbol = "@"; 
   w->Player.Health = 500;
   w->Player.MaxHealth = 500;
+  w->Player.Experience = 0;
 
   w->Windows = initWindows(w->WindowHeight, w->WindowWidth);
 

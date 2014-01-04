@@ -54,6 +54,7 @@ void printObjects(world* w) {
     return;
   }
 
+
   hPercent = ((float)n->Health) / n->MaxHealth;
   if(hPercent > 0.66)
     color = 3;
@@ -67,20 +68,21 @@ void printObjects(world* w) {
   mvwprintw(w->Windows.Status, 2, 4, n->Desc);
 }
 
-void printPlayerStatus(world* w) {
-/*  player* p = &w->Player;*/
-  char healthLine[50];
-  char healthString[50];
-  char maxHealthString[50];
+static void printPlayerStatusHealth(world* w) {
+  char healthLine[20];
+  char healthString[20];
+  char maxHealthString[20];
   int x;
   int color;
   float healthPercent;
+  const int HEALTH_Y = 2;
+  player* p = &w->Player;
 
   strcpy(healthLine, "Health: ");
-  sprintf(healthString, "%d", w->Player.Health);
-  sprintf(maxHealthString, "%d", w->Player.MaxHealth);
+  sprintf(healthString, "%d", p->Health);
+  sprintf(maxHealthString, "%d", p->MaxHealth);
 
-  healthPercent = ((float)w->Player.Health) / w->Player.MaxHealth;
+  healthPercent = ((float)p->Health) / p->MaxHealth;
   if(healthPercent > 0.66)
     color = 3;
   else if(healthPercent > 0.33)
@@ -89,16 +91,53 @@ void printPlayerStatus(world* w) {
     color = 1;
 
   x = w->WindowWidth - 20;
-  mvwprintw(w->Windows.Status, 2, x, "                   ");
-  mvwprintw(w->Windows.Status, 2, x, healthLine);
+  mvwprintw(w->Windows.Status, HEALTH_Y, x, "                   ");
+  mvwprintw(w->Windows.Status, HEALTH_Y, x, healthLine);
   x += strlen(healthLine);
   wattron(w->Windows.Status, COLOR_PAIR(color));
-  mvwprintw(w->Windows.Status, 2, x, healthString);
+  mvwprintw(w->Windows.Status, HEALTH_Y, x, healthString);
   x += strlen(healthString);
-  mvwprintw(w->Windows.Status, 2, x, "/");
+  mvwprintw(w->Windows.Status, HEALTH_Y, x, "/");
   x += 1;
-  mvwprintw(w->Windows.Status, 2, x, maxHealthString);
+  mvwprintw(w->Windows.Status, HEALTH_Y, x, maxHealthString);
   wattroff(w->Windows.Status, COLOR_PAIR(color));
+}
+
+static void printPlayerStatusExp(world* w) {
+  const int EXP_Y = 3;
+  const int LEVEL_Y = 4;
+  char expString[20];
+  char levelString[20];
+  int x;
+  int color;
+  player* p = &w->Player;
+  const char* EXP_STRING = "Experience: ";
+  const char* LEVEL_STRING = "Level: ";
+
+  x = w->WindowWidth - 20;
+  color = 2;
+  sprintf(expString, "%lu", p->Experience);
+  mvwprintw(w->Windows.Status, EXP_Y, x, "                  ");
+  wattron(w->Windows.Status, COLOR_PAIR(color));
+  mvwprintw(w->Windows.Status, EXP_Y, x, EXP_STRING);
+  x += strlen(EXP_STRING);
+  mvwprintw(w->Windows.Status, EXP_Y, x, expString);
+  wattroff(w->Windows.Status, COLOR_PAIR(color));
+
+  x = w->WindowWidth - 20;
+  color = 3;
+  sprintf(levelString, "%d", player_level(p));
+  mvwprintw(w->Windows.Status, LEVEL_Y, x, "                  ");
+  wattron(w->Windows.Status, COLOR_PAIR(color));
+  mvwprintw(w->Windows.Status, LEVEL_Y, x, LEVEL_STRING);
+  x += strlen(LEVEL_STRING);
+  mvwprintw(w->Windows.Status, LEVEL_Y, x, levelString);
+  wattroff(w->Windows.Status, COLOR_PAIR(color));
+}
+
+void printPlayerStatus(world* w) {
+  printPlayerStatusHealth(w);
+  printPlayerStatusExp(w);
 }
 
 /* @todo add room message window */
@@ -106,6 +145,12 @@ void printMessage(const char* msg, world* w) {
   const char* blank = "                                                                                                    ";
   mvwprintw(w->Windows.Status, 7, 2, blank);
   mvwprintw(w->Windows.Status, 7, 2, msg);
+}
+
+void printAttackMessage(const char* msg, world* w) {
+  const char* blank = "                                                                                                    ";
+  mvwprintw(w->Windows.Status, 5, 2, blank);
+  mvwprintw(w->Windows.Status, 5, 2, msg);
 }
 
 /* prints basic GUI that should always be visible */
